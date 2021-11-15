@@ -9,6 +9,7 @@
 	"dependencies": {
 		"coffee-script": "*",
 		"express": "^4.12.4",
+		"fabricjs": "^1.0.0",
 		"socket.io": "*"
 	},
 	"engines": {
