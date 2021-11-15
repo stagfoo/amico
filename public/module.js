@@ -432,11 +432,74 @@ function onWindowResize() {
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
+
+function makeLabelCanvas(baseWidth, size, name){
+  const domElm = document.createElement('canvas');
+  const ctx = domElm.getContext('2d');
+  const font =  `${size}px bold sans-serif`;
+  ctx.font = font;
+  const width = baseWidth
+  const height = 50
+  // measure how long the name will be
+  ctx.canvas.width = width;
+  ctx.canvas.height = height;
+
+  // need to set font again after resizing canvas
+  ctx.font = font;
+  ctx.textBaseline = 'middle';
+  ctx.textAlign = 'center';
+
+  ctx.fillStyle = 'black';
+  ctx.fillRect(0, 0, width, height);
+
+  // scale to fit but don't stretch
+  ctx.translate(width / 2, height / 2);
+  ctx.scale(1, 1);
+  ctx.fillStyle = 'white';
+  ctx.fillText(name, 0, 0);
+  document.body.appendChild(domElm)
+  return new THREE.CanvasTexture(ctx.canvas);
+}
+
+//---------------Canvas Texture-------------------
+
+
+// --------------Mesh Loader-----------------------
 var loader = new THREE.BufferGeometryLoader();
+// --------------Material-----------------------
 const peep_tex = new THREE.TextureLoader().load("peeps/texture.png");
+const typingTexture = new THREE.TextureLoader().load("peeps/texture.png");
+const chatTexture = new THREE.TextureLoader().load("peeps/texture.png");
 const peep_material = new THREE.MeshToonMaterial();
 peep_material.emissiveMap = peep_tex;
 peep_material.emissive = new THREE.Color(1, 1, 1);
+// --------------Chat Bubbles-----------------------
+function typingBubble(playerMesh, texture){
+  const chatSprite = new THREE.SpriteMaterial({
+    map: texture,
+    transparent: false,
+  });
+  const chatBubble = new THREE.Sprite(chatSprite);
+  chatBubble.position.y = 4.5;
+  chatBubble.position.z = 0;
+  chatBubble.position.x = 0;
+  const scale = 1;
+  chatBubble.scale.set(scale*1.5, scale, scale);
+  playerMesh.add(chatBubble);
+}
+
+function messageBubble(playerMesh){
+  const chatSprite = new THREE.SpriteMaterial({
+    map: chatTexture,
+    transparent: true,
+  });
+  const chatBubble = new THREE.Sprite(chatSprite);
+  chatBubble.position.y = 5;
+  chatBubble.position.z = 0;
+  chatBubble.position.x = 0;
+  playerMesh.add(chatBubble);
+}
+
 
 var Player = function (playerID) {
   this.playerID = playerID;
@@ -446,10 +509,11 @@ var Player = function (playerID) {
   var scope = this;
   this.init = function () {
     loader.load("/peeps/mesh_1.json", function (geometry, material) {
-      console.log(geometry, material);
+      const usernameTexture = makeLabelCanvas(playerID.length * 20, 24,  playerID);
       scope.mesh = new THREE.Mesh(geometry, peep_material);
       scope.mesh.scale.set(0.5, 0.5, 0.5);
       scope.mesh.rotateY(-180);
+      typingBubble(scope.mesh, usernameTexture);
       scene.add(scope.mesh);
 
       if (scope.isMainPlayer) {
@@ -590,6 +654,9 @@ $(function () {
   function addChatTyping(data) {
     data.typing = true;
     data.message = "is typing";
+    if(data.typing){
+
+    }
     addChatMessage(data);
   }
 
