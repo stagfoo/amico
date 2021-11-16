@@ -403,7 +403,7 @@ function init() {
   camera.position.z = 5;
   
   renderer = new THREE.WebGLRenderer({ alpha: true });
-  var videoSprite = new THREE.Sprite(createVideoTexture('normal-video'));
+  var videoSprite = new THREE.Sprite(createVideoTexture('youtube-video'));
   videoSprite.position.y = 1;
   videoSprite.position.z = 1;
   videoSprite.position.x = 1;
