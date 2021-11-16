@@ -1,16 +1,31 @@
-import * as THREE from "https://cdn.skypack.dev/three";
-import { CSS3DRenderer, CSS3DObject } from 'https://threejs.org/examples/jsm/renderers/CSS3DRenderer.js';
-let camera, scene, renderer;
-let geometry, material, mesh;
+import * as THREE from "three";
+import * as _ from 'lodash';
+import { CanvasTexture } from "three";
 
-var username;
-var container;
-var controls;
-var otherPlayers = {};
-var playerID;
-var player;
+let camera: THREE.PerspectiveCamera,
+  scene: THREE.Scene,
+  renderer: THREE.WebGLRenderer;
 
-var PlayerControls = function (camera, player, domElement) {
+let username: any;
+let container:any;
+let controls: { update: () => void; init: () => void };
+let otherPlayers:any = {};
+let playerID: any;
+let player:any;
+let socket: any;
+
+let PlayerControls:any = function (
+  this: any,
+  camera: any,
+  player: {
+    position: {
+      x: number | undefined;
+      y: number | undefined;
+      z: number | undefined;
+    };
+  },
+  domElement: undefined
+) {
   this.camera = camera;
   this.player = player;
   this.domElement = domElement !== undefined ? domElement : document;
@@ -40,39 +55,37 @@ var PlayerControls = function (camera, player, domElement) {
 
   // internals
 
-  var scope = this;
+  let scope = this;
 
-  var EPS = 0.000001;
-  var PIXELS_PER_ROUND = 1800;
+  let EPS = 0.000001;
+  let PIXELS_PER_ROUND = 1800;
 
-  var rotateStart = new THREE.Vector2();
-  var rotateEnd = new THREE.Vector2();
-  var rotateDelta = new THREE.Vector2();
+  let rotateStart = new THREE.Vector2();
+  let rotateEnd = new THREE.Vector2();
+  let rotateDelta = new THREE.Vector2();
 
-  var zoomStart = new THREE.Vector2();
-  var zoomEnd = new THREE.Vector2();
-  var zoomDelta = new THREE.Vector2();
+  let zoomStart = new THREE.Vector2();
+  let zoomEnd = new THREE.Vector2();
+  let zoomDelta = new THREE.Vector2();
 
-  var phiDelta = 0;
-  var thetaDelta = 0;
-  var scale = 1;
+  let phiDelta = 0;
+  let thetaDelta = 0;
+  let scale = 1;
 
-  var lastPosition = new THREE.Vector3(
+  let lastPosition = new THREE.Vector3(
     player.position.x,
     player.position.y,
     player.position.z
   );
-  var playerIsMoving = false;
+  let playerIsMoving = false;
 
-  var keyState = {};
-  var STATE = { NONE: -1, ROTATE: 0, ZOOM: 1, PAN: 2 };
-  var state = STATE.NONE;
+  let keyState:any = {};
+  let STATE = { NONE: -1, ROTATE: 0, ZOOM: 1, PAN: 2 };
+  let state = STATE.NONE;
 
   // events
 
-  var changeEvent = { type: "change" };
-
-  this.rotateLeft = function (angle) {
+  this.rotateLeft = function (angle: number | undefined) {
     if (angle === undefined) {
       angle = getAutoRotationAngle();
     }
@@ -80,7 +93,7 @@ var PlayerControls = function (camera, player, domElement) {
     thetaDelta -= angle;
   };
 
-  this.rotateRight = function (angle) {
+  this.rotateRight = function (angle: number | undefined) {
     if (angle === undefined) {
       angle = getAutoRotationAngle();
     }
@@ -88,7 +101,7 @@ var PlayerControls = function (camera, player, domElement) {
     thetaDelta += angle;
   };
 
-  this.rotateUp = function (angle) {
+  this.rotateUp = function (angle: number | undefined) {
     if (angle === undefined) {
       angle = getAutoRotationAngle();
     }
@@ -96,7 +109,7 @@ var PlayerControls = function (camera, player, domElement) {
     phiDelta -= angle;
   };
 
-  this.rotateDown = function (angle) {
+  this.rotateDown = function (angle: number | undefined) {
     if (angle === undefined) {
       angle = getAutoRotationAngle();
     }
@@ -104,7 +117,7 @@ var PlayerControls = function (camera, player, domElement) {
     phiDelta += angle;
   };
 
-  this.zoomIn = function (zoomScale) {
+  this.zoomIn = function (zoomScale: number | undefined) {
     if (zoomScale === undefined) {
       zoomScale = getZoomScale();
     }
@@ -112,7 +125,7 @@ var PlayerControls = function (camera, player, domElement) {
     scale /= zoomScale;
   };
 
-  this.zoomOut = function (zoomScale) {
+  this.zoomOut = function (zoomScale: number | undefined) {
     if (zoomScale === undefined) {
       zoomScale = getZoomScale();
     }
@@ -133,16 +146,16 @@ var PlayerControls = function (camera, player, domElement) {
 
     this.center = this.player.position;
 
-    var position = this.camera.position;
-    var offset = position.clone().sub(this.center);
+    let position = this.camera.position;
+    let offset = position.clone().sub(this.center);
 
     // angle from z-axis around y-axis
 
-    var theta = Math.atan2(offset.x, offset.z);
+    let theta = Math.atan2(offset.x, offset.z);
 
     // angle from y-axis
 
-    var phi = Math.atan2(
+    let phi = Math.atan2(
       Math.sqrt(offset.x * offset.x + offset.z * offset.z),
       offset.y
     );
@@ -156,7 +169,7 @@ var PlayerControls = function (camera, player, domElement) {
     // restrict phi to be between EPS and PI-EPS
     phi = Math.max(EPS, Math.min(Math.PI - EPS, phi));
 
-    var radius = offset.length() * scale;
+    let radius = offset.length() * scale;
 
     radius = Math.max(this.minDistance, Math.min(this.maxDistance, radius));
 
@@ -238,24 +251,23 @@ var PlayerControls = function (camera, player, domElement) {
       this.player.position.z -=
         this.moveSpeed * Math.sin(this.player.rotation.y);
     }
-    if(playerIsMoving) {
-        socket.emit("player moved", {
-            username: username,
-            orientation: {
-                position: {
-                    x: this.player.position.x,
-                    y: this.player.position.y,
-                    z: this.player.position.z,
-                  },
-                  rotation: {
-                    x: this.player.rotation.x,
-                    y: this.player.rotation.y,
-                    z: this.player.rotation.z,
-                  },
-            }
-          });
+    if (playerIsMoving) {
+      socket.emit("player moved", {
+        username: username,
+        orientation: {
+          position: {
+            x: this.player.position.x,
+            y: this.player.position.y,
+            z: this.player.position.z,
+          },
+          rotation: {
+            x: this.player.rotation.x,
+            y: this.player.rotation.y,
+            z: this.player.rotation.z,
+          },
+        },
+      });
     }
-
   };
 
   function getAutoRotationAngle() {
@@ -266,7 +278,12 @@ var PlayerControls = function (camera, player, domElement) {
     return Math.pow(0.95, scope.userZoomSpeed);
   }
 
-  function onMouseDown(event) {
+  function onMouseDown(event: {
+    preventDefault: () => void;
+    button: number;
+    clientX: number;
+    clientY: number;
+  }) {
     if (scope.enabled === false) return;
     if (scope.userRotate === false) return;
 
@@ -286,7 +303,11 @@ var PlayerControls = function (camera, player, domElement) {
     document.addEventListener("mouseup", onMouseUp, false);
   }
 
-  function onMouseMove(event) {
+  function onMouseMove(event: {
+    preventDefault: () => void;
+    clientX: number;
+    clientY: number;
+  }) {
     if (scope.enabled === false) return;
 
     event.preventDefault();
@@ -319,7 +340,7 @@ var PlayerControls = function (camera, player, domElement) {
     }
   }
 
-  function onMouseUp(event) {
+  function onMouseUp(event: any) {
     if (scope.enabled === false) return;
     if (scope.userRotate === false) return;
 
@@ -329,11 +350,11 @@ var PlayerControls = function (camera, player, domElement) {
     state = STATE.NONE;
   }
 
-  function onMouseWheel(event) {
+  function onMouseWheel(event: { wheelDelta: number; detail: number }) {
     if (scope.enabled === false) return;
     if (scope.userRotate === false) return;
 
-    var delta = 0;
+    let delta = 0;
 
     if (event.wheelDelta) {
       //WebKit / Opera / Explorer 9
@@ -352,21 +373,19 @@ var PlayerControls = function (camera, player, domElement) {
     }
   }
 
-  function onKeyDown(event) {
+  function onKeyDown(event: any | undefined) {
     event = event || window.event;
-
     keyState[event.keyCode || event.which] = true;
   }
 
-  function onKeyUp(event) {
+  function onKeyUp(event: any | undefined) {
     event = event || window.event;
-
     keyState[event.keyCode || event.which] = false;
   }
 
   this.domElement.addEventListener(
     "contextmenu",
-    function (event) {
+    function (event: { preventDefault: () => void }) {
       event.preventDefault();
     },
     false
@@ -388,10 +407,10 @@ function init() {
   container = document.getElementById("container");
 
   scene = new THREE.Scene();
-  var axes = new THREE.AxesHelper(5);
+  let axes = new THREE.AxesHelper(5);
   scene.add(axes);
-  var gridXZ = new THREE.GridHelper(100, 10);
-  gridXZ.position.set(0, 0);
+  let gridXZ = new THREE.GridHelper(100, 10);
+  gridXZ.position.set(0, 0, 0);
   scene.add(gridXZ);
 
   camera = new THREE.PerspectiveCamera(
@@ -401,15 +420,15 @@ function init() {
     1000
   );
   camera.position.z = 5;
-  
+
   renderer = new THREE.WebGLRenderer({ alpha: true });
-  var videoSprite = new THREE.Sprite(createVideoTexture('youtube-video'));
+  let videoSprite = new THREE.Sprite(createVideoTexture("youtube-video"));
   videoSprite.position.y = 1;
   videoSprite.position.z = 1;
   videoSprite.position.x = 1;
   videoSprite.scale.set(1, 1, 1);
-  scene.add(videoSprite)
-  console.log('added');
+  scene.add(videoSprite);
+  console.log("added");
   // renderer = new CSS3DRenderer();
   renderer.setSize(window.innerWidth, window.innerHeight);
   // Events
@@ -430,7 +449,7 @@ function animate() {
 }
 
 function render() {
-//   renderer.clear();
+  //   renderer.clear();
   renderer.render(scene, camera);
 }
 
@@ -440,49 +459,50 @@ function onWindowResize() {
   renderer.setSize(window.innerWidth, window.innerHeight);
 }
 
-
-
-function createVideoTexture(id){
-  var video = document.getElementById( id );
-  var texture = new THREE.VideoTexture( video );
-  return new THREE.SpriteMaterial({
-    map: texture,
-    transparent: false,
-  });
+function createVideoTexture(id: string) {
+  let video = (document.getElementById(id) as HTMLVideoElement);
+  if(!_.isNil(video)){
+    let texture = new THREE.VideoTexture(video);
+    return new THREE.SpriteMaterial({
+      map: texture,
+      transparent: false,
+    });
+  }
 }
 
-function makeLabelCanvas(baseWidth, size, name){
-  const domElm = document.createElement('canvas');
-  const ctx = domElm.getContext('2d');
-  const font =  `${size}px bold sans-serif`;
-  ctx.font = font;
-  const width = baseWidth
-  const height = 50
-  // measure how long the name will be
-  ctx.canvas.width = width;
-  ctx.canvas.height = height;
-  // need to set font again after resizing canvas
-  ctx.font = font;
-  ctx.textBaseline = 'middle';
-  ctx.textAlign = 'center';
-
-  ctx.fillStyle = 'black';
-  ctx.fillRect(0, 0, width, height);
-
-  // scale to fit but don't stretch
-  ctx.translate(width / 2, height / 2);
-  ctx.scale(1, 1);
-  ctx.fillStyle = 'white';
-  ctx.fillText(name, 0, 0);
-  document.body.appendChild(domElm)
-  return new THREE.CanvasTexture(ctx.canvas);
+function makeLabelCanvas(baseWidth: number, size: number, name: string) {
+  const domElm = document.createElement("canvas");
+  const ctx = domElm.getContext("2d");
+  const font = `${size}px bold sans-serif`;
+  if(ctx){
+    ctx.font = font;
+    const width = baseWidth;
+    const height = 50;
+    // measure how long the name will be
+    ctx.canvas.width = width;
+    ctx.canvas.height = height;
+    // need to set font again after resizing canvas
+    ctx.font = font;
+    ctx.textBaseline = "middle";
+    ctx.textAlign = "center";
+  
+    ctx.fillStyle = "black";
+    ctx.fillRect(0, 0, width, height);
+  
+    // scale to fit but don't stretch
+    ctx.translate(width / 2, height / 2);
+    ctx.scale(1, 1);
+    ctx.fillStyle = "white";
+    ctx.fillText(name, 0, 0);
+    document.body.appendChild(domElm);
+    return new THREE.CanvasTexture(ctx.canvas);
+  }
 }
 
 //---------------Canvas Texture-------------------
 
-
 // --------------Mesh Loader-----------------------
-var loader = new THREE.BufferGeometryLoader();
+let loader = new THREE.BufferGeometryLoader();
 // --------------Material-----------------------
 const peep_tex = new THREE.TextureLoader().load("peeps/texture.png");
 const typingTexture = new THREE.TextureLoader().load("peeps/texture.png");
@@ -491,7 +511,10 @@ const peep_material = new THREE.MeshToonMaterial();
 peep_material.emissiveMap = peep_tex;
 peep_material.emissive = new THREE.Color(1, 1, 1);
 // --------------Chat Bubbles-----------------------
-function typingBubble(playerMesh, texture){
+function typingBubble(
+  playerMesh: { add: (arg0: THREE.Sprite) => void },
+  texture: THREE.CanvasTexture
+) {
   const chatSprite = new THREE.SpriteMaterial({
     map: texture,
     transparent: false,
@@ -501,11 +524,11 @@ function typingBubble(playerMesh, texture){
   chatBubble.position.z = 0;
   chatBubble.position.x = 0;
   const scale = 1;
-  chatBubble.scale.set(scale*1.5, scale, scale);
+  chatBubble.scale.set(scale * 1.5, scale, scale);
   playerMesh.add(chatBubble);
 }
 
-function messageBubble(playerMesh){
+function messageBubble(playerMesh: { add: (arg0: THREE.Sprite) => void }) {
   const chatSprite = new THREE.SpriteMaterial({
     map: chatTexture,
     transparent: true,
@@ -517,16 +540,25 @@ function messageBubble(playerMesh){
   playerMesh.add(chatBubble);
 }
 
-
-var Player = function (playerID) {
+let Player:any = function (this: {
+  playerID: any,
+  isMainPlayer: boolean,
+  mesh?: any,
+  init?: any
+  setOrientation?: any
+}, playerID: string) {
   this.playerID = playerID;
   this.isMainPlayer = false;
   this.mesh;
 
-  var scope = this;
+  let scope = this;
   this.init = function () {
-    loader.load("/peeps/mesh_1.json", function (geometry, material) {
-      const usernameTexture = makeLabelCanvas(playerID.length * 20, 24,  playerID);
+    loader.load("/peeps/mesh_1.json", function (geometry: any) {
+      const usernameTexture = (makeLabelCanvas(
+        playerID.length * 20,
+        24,
+        playerID
+      ) as CanvasTexture);
       scope.mesh = new THREE.Mesh(geometry, peep_material);
       scope.mesh.scale.set(0.5, 0.5, 0.5);
       scope.mesh.rotateY(-180);
@@ -534,68 +566,50 @@ var Player = function (playerID) {
       scene.add(scope.mesh);
 
       if (scope.isMainPlayer) {
-        // Give player control of this mesh
         controls = new PlayerControls(camera, scope.mesh);
         controls.init();
       }
     });
   };
 
-  this.setOrientation = function (orientation) {
+  this.setOrientation = function (orientation: { position: any }) {
     if (scope.mesh) {
       scope.mesh.position.copy(orientation.position);
-    //   scope.mesh.rotation.x = rotation.x;
-    //   scope.mesh.rotation.y = rotation.y;
-    //   scope.mesh.rotation.z = rotation.z;
+      //   scope.mesh.rotation.x = rotation.x;
+      //   scope.mesh.rotation.y = rotation.y;
+      //   scope.mesh.rotation.z = rotation.z;
     }
   };
 };
 
 // ----------------CHAT APP
-$(function () {
-  var FADE_TIME = 150; // ms
-  var TYPING_TIMER_LENGTH = 400; // ms
-  var COLORS = [
-    "#e21400",
-    "#91580f",
-    "#f8a700",
-    "#f78b00",
-    "#58dc00",
-    "#287b00",
-    "#a8f07a",
-    "#4ae8c4",
-    "#3b88eb",
-    "#3824aa",
-    "#a700ff",
-    "#d300e7",
-  ];
 
   // Initialize variables
-  var $window = $(window);
-  var $usernameInput = $(".usernameInput"); // Input for username
-  var $messages = $(".messages"); // Messages area
-  var $inputMessage = $(".inputMessage"); // Input message input box
+  let $window = $(window);
+  let $usernameInput:any = $(".usernameInput"); // Input for username
+  let $messages = $(".messages"); // Messages area
+  let $inputMessage = $(".inputMessage"); // Input message input box
 
-  var $loginPage = $(".login.page"); // The login page
-  var $chatPage = $(".chat.page"); // The chatroom page
+  let $loginPage = $(".login.page"); // The login page
+  let $chatPage = $(".chat.page"); // The chatroom page
 
   // Prompt for setting a username
-  var connected = false;
-  var typing = false;
-  var lastTypingTime;
-  var $currentInput = $usernameInput.focus();
+  let connected = false;
+  let typing = false;
+  let lastTypingTime: number;
 
-  var socket = io();
-  window.socket = socket;
+  socket = io();
 
-  function addParticipantsMessage(data) {
-    var message = "";
+  function addParticipantsMessage(data: { numUsers?: number }) {
+    let message = "";
     if (data.numUsers === 1) {
       message += "there's 1 participant";
     } else {
       message += "there are " + data.numUsers + " participants";
     }
-    log(message);
+    log(message, {
+      prepend: false
+    });
   }
 
   // Sets the client's username
@@ -606,12 +620,10 @@ $(function () {
     if (username) {
       $loginPage.fadeOut();
       $chatPage.show();
-      $currentInput = $inputMessage.focus();
-      loadGame();
       // Tell the server your username
       socket.emit("add user", {
         username: username,
-       orientation: {}
+        orientation: {},
       });
       //setup new player
       player = new Player(username);
@@ -622,7 +634,7 @@ $(function () {
 
   // Sends a chat message
   function sendMessage() {
-    var message = $inputMessage.val();
+    let message = $inputMessage.val();
     // Prevent markup from being injected into the message
     message = cleanInput(message);
     // if there is a non-empty message and a socket connection
@@ -631,6 +643,8 @@ $(function () {
       addChatMessage({
         username: username,
         message: message,
+      }, {
+        fade: false,
       });
       // tell server to execute 'new message' and send along one parameter
       socket.emit("new message", message);
@@ -638,28 +652,31 @@ $(function () {
   }
 
   // Log a message
-  function log(message, options) {
-    var $el = $("<li>").addClass("log").text(message);
+  function log(message: string, options: { prepend?: boolean, fade?:boolean }) {
+    let $el = $("<li>").addClass("log").text(message);
     addMessageElement($el, options);
   }
 
   // Adds the visual chat message to the message list
-  function addChatMessage(data, options) {
+  function addChatMessage(
+    data: { username: any; message: any; typing?: any },
+    options: { fade?: any } | undefined
+  ) {
     // Don't fade the message in if there is an 'X was typing'
-    var $typingMessages = getTypingMessages(data);
+    let $typingMessages = getTypingMessages(data);
     options = options || {};
     if ($typingMessages.length !== 0) {
       options.fade = false;
       $typingMessages.remove();
     }
 
-    var $usernameDiv = $('<span class="username"/>')
+    let $usernameDiv = $('<span class="username"/>')
       .text(data.username)
       .css("color", getUsernameColor(data.username));
-    var $messageBodyDiv = $('<span class="messageBody">').text(data.message);
+    let $messageBodyDiv = $('<span class="messageBody">').text(data.message);
 
-    var typingClass = data.typing ? "typing" : "";
-    var $messageDiv = $('<li class="message"/>')
+    let typingClass = data.typing ? "typing" : "";
+    let $messageDiv = $('<li class="message"/>')
       .data("username", data.username)
       .addClass(typingClass)
       .append($usernameDiv, $messageBodyDiv);
@@ -668,30 +685,23 @@ $(function () {
   }
 
   // Adds the visual chat typing message
-  function addChatTyping(data) {
+  function addChatTyping(data: { typing: boolean; message: string, username: string }) {
     data.typing = true;
     data.message = "is typing";
-    if(data.typing){
-
+    if (data.typing) {
     }
-    addChatMessage(data);
+    addChatMessage(data, { fade: false });
   }
 
   // Removes the visual chat typing message
-  function removeChatTyping(data) {
+  function removeChatTyping(data: any) {
     getTypingMessages(data).fadeOut(function () {
       $(this).remove();
     });
   }
 
-  // Adds a message element to the messages and scrolls to the bottom
-  // el - The element to add as a message
-  // options.fade - If the element should fade-in (default = true)
-  // options.prepend - If the element should prepend
-  //   all other messages (default = false)
-  function addMessageElement(el, options) {
-    var $el = $(el);
-
+  function addMessageElement(el: any, options: { fade?: any; prepend?: any }) {
+    let $el = $(el);
     // Setup default options
     if (!options) {
       options = {};
@@ -703,10 +713,6 @@ $(function () {
       options.prepend = false;
     }
 
-    // Apply options
-    if (options.fade) {
-      $el.hide().fadeIn(FADE_TIME);
-    }
     if (options.prepend) {
       $messages.prepend($el);
     } else {
@@ -716,7 +722,7 @@ $(function () {
   }
 
   // Prevents input from having injected markup
-  function cleanInput(input) {
+  function cleanInput(input: any) {
     return $("<div/>").text(input).text();
   }
 
@@ -730,38 +736,42 @@ $(function () {
       lastTypingTime = new Date().getTime();
 
       setTimeout(function () {
-        var typingTimer = new Date().getTime();
-        var timeDiff = typingTimer - lastTypingTime;
-        if (timeDiff >= TYPING_TIMER_LENGTH && typing) {
+        let typingTimer = new Date().getTime();
+        let timeDiff = typingTimer - lastTypingTime;
+        if (timeDiff >= 500 && typing) {
           socket.emit("stop typing");
           typing = false;
         }
-      }, TYPING_TIMER_LENGTH);
+      }, 500);
     }
   }
 
   // Gets the 'X is typing' messages of a user
-  function getTypingMessages(data) {
-    return $(".typing.message").filter(function (i) {
+  function getTypingMessages(data: { username: any }) {
+    return $(".typing.message").filter(function (i: any) {
       return $(this).data("username") === data.username;
     });
   }
 
   // Gets the color of a username through our hash function
-  function getUsernameColor(username) {
+  function getUsernameColor(username: string) {
     // Compute hash code
-    var hash = 7;
-    for (var i = 0; i < username.length; i++) {
+    let hash = 7;
+    for (let i = 0; i < username.length; i++) {
       hash = username.charCodeAt(i) + (hash << 5) - hash;
     }
     // Calculate color
-    var index = Math.abs(hash % COLORS.length);
-    return COLORS[index];
+    return '#000000';
   }
 
   // Keyboard events
 
-  $window.keydown(function (event) {
+  (window as any).onkeydown(function (event: {
+    ctrlKey: any;
+    metaKey: any;
+    altKey: any;
+    which: number;
+  }) {
     // Auto-focus the current input when a key is typed
     if (!(event.ctrlKey || event.metaKey || event.altKey)) {
       // $currentInput.focus();
@@ -785,92 +795,82 @@ $(function () {
   // Socket events
 
   // Whenever the server emits 'login', log the login message
-  socket.on("login", function (data) {
+  socket.on("login", function (data: { currentUsers: {}, numUsers?: number }) {
     connected = true;
     // Display the welcome message
-    var message = "Welcome to Socket.IO Chat – ";
+    let message = "Welcome to Socket.IO Chat – ";
     log(message, {
       prepend: true,
     });
     addParticipantsMessage(data);
 
     //didnt work??
-    Object.keys(otherPlayers).map(k => {
-        console.log('login', data)
-        if(!Object.keys(data.currentUsers).includes(k)){
-            otherPlayers[k] = new Player(k);
-            otherPlayers[k].init();
-        }
-    })
+    Object.keys(otherPlayers).map((k) => {
+      console.log("login", data);
+      if (!Object.keys(data.currentUsers).includes(k)) {
+        otherPlayers[k] = new Player(k);
+        otherPlayers[k].init();
+      }
+    });
   });
 
   // Whenever the server emits 'new message', update the chat body
-  socket.on("new message", function (data) {
-    addChatMessage(data);
+  socket.on("new message", function (data: { username: string, message: string, numUsers?: number }) {
+    addChatMessage(data, {
+      fade: false
+    });
   });
 
-  socket.on("player moved", function (data) {
+  socket.on(
+    "player moved",
+    function (data: { username: string; orientation: any }) {
       console.log("player moved", data);
-      if(!Object.keys(otherPlayers).includes(data.username)){
+      if (!Object.keys(otherPlayers).includes(data.username)) {
         otherPlayers[data.username] = new Player(data.username);
         otherPlayers[data.username].init();
-    }
-    console.log(otherPlayers)
-      if(data.orientation && data.username){
+      }
+      console.log(otherPlayers);
+      if (data.orientation && data.username) {
         otherPlayers[data.username].setOrientation(data.orientation);
       }
-
-  });
+    }
+  );
 
   // Whenever the server emits 'user joined', log it in the chat body
-  socket.on("user joined", function (data) {
-    log(data.username + " joined");
+  socket.on("user joined", function (data: { username: string, numUsers: number }) {
+    log(data.username + " joined", { prepend: false });
     addParticipantsMessage(data);
-      if (username != data.username && !otherPlayers[data.username]) {
-        otherPlayers[data.username] = new Player(data.username);
-        otherPlayers[data.username].init();
-      }
+    if (username != data.username && !otherPlayers[data.username]) {
+      otherPlayers[data.username] = new Player(data.username);
+      otherPlayers[data.username].init();
+    }
   });
 
   // Whenever the server emits 'user left', log it in the chat body
-  socket.on("user left", function (data) {
-    log(data.username + " left");
+  socket.on("user left", function (data: { username: string, numUsers: number }) {
+    log(data.username + " left", { prepend: false });
     addParticipantsMessage(data);
     removeChatTyping(data);
   });
 
   // Whenever the server emits 'typing', show the typing message
-  socket.on("typing", function (data) {
+  socket.on("typing", function (data: any) {
     addChatTyping(data);
   });
 
   // Whenever the server emits 'stop typing', kill the typing message
-  socket.on("stop typing", function (data) {
+  socket.on("stop typing", function (data: any) {
     removeChatTyping(data);
   });
-});
 
-function loadGame() {
-  // load the environment
-  // loadEnvironment();
-  // load the player
-  // initMainPlayer();
 
-  // listenToOtherPlayers();
-
-  window.onunload = function () {
-    socket.emit("player left", playerID);
-  };
-
-  window.onbeforeunload = function () {
-    socket.emit("player left", playerID);
-  };
-}
 
 function loadEnvironment() {
-  var sphere_geometry = new THREE.SphereGeometry(1);
-  var sphere_material = new THREE.MeshNormalMaterial();
-  var sphere = new THREE.Mesh(sphere_geometry, sphere_material);
+  let sphere_geometry = new THREE.SphereGeometry(1);
+  let sphere_material = new THREE.MeshNormalMaterial();
+  let sphere = new THREE.Mesh(sphere_geometry, sphere_material);
   //center
   scene.add(sphere);
 }
+
+

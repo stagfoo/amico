@@ -26,16 +26,14 @@
   <video id="normal-video" muted autoplay controls>
     <source type="video/webm" src="example.webm" />
   </video>
+
+  <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
+  <video id="dash" data-dashjs-player="" autoplay="" src="http://localhost:9999/id" controls="true"></video>
+
   
   <script src="https://code.jquery.com/jquery-2.2.2.min.js"></script>
   <script type="module" src="/module.js"></script>
   <script src="/socket.io/socket.io.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@thelevicole/youtube-to-html5-loader@4.0.1/dist/YouTubeToHtml5.min.js"></script>
-  <script>
-    new YouTubeToHtml5({   
-      selector: '#youtube-video',
-      attribute: 'data-yt'
-    });
-  </script>
 </body>
 </html>

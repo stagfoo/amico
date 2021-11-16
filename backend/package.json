@@ -2,15 +2,22 @@
 	"name": "amico",
 	"version": "0.0.1",
 	"description": "A node js chat app",
-	"main": "server.js",
+	"main": "dist/server.js",
 	"scripts": {
-		"start": "node server.js"
+		"start": "cd dist && node server.js",
+		"build": "tsc --resolveJsonModule"
 	},
 	"dependencies": {
+		"@thelevicole/youtube-to-html5-loader": "^4.0.1",
 		"coffee-script": "*",
+		"cors": "^2.8.5",
 		"express": "^4.12.4",
 		"fabricjs": "^1.0.0",
-		"socket.io": "*"
+		"got": "^11.8.2",
+		"node-fetch": "^3.1.0",
+		"socket.io": "*",
+		"typescript": "^4.4.4",
+		"yt-live-url": "^1.0.1"
 	},
 	"engines": {
 		"node": "4.4.5"
