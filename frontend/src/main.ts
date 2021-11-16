@@ -10,7 +10,6 @@ let username: any;
 let container:any;
 let controls: { update: () => void; init: () => void };
 let otherPlayers:any = {};
-let playerID: any;
 let player:any;
 let socket: any;
 
@@ -340,7 +339,7 @@ let PlayerControls:any = function (
     }
   }
 
-  function onMouseUp(event: any) {
+  function onMouseUp() {
     if (scope.enabled === false) return;
     if (scope.userRotate === false) return;
 
@@ -468,6 +467,8 @@ function createVideoTexture(id: string) {
       transparent: false,
     });
   }
+  console.log('createVideoTexture '+id)
+  return;
 }
 
 function makeLabelCanvas(baseWidth: number, size: number, name: string) {
@@ -497,6 +498,8 @@ function makeLabelCanvas(baseWidth: number, size: number, name: string) {
     document.body.appendChild(domElm);
     return new THREE.CanvasTexture(ctx.canvas);
   }
+  console.log('makeLabelCanvas')
+  return;
 }
 
 //---------------Canvas Texture-------------------
@@ -505,8 +508,9 @@ function makeLabelCanvas(baseWidth: number, size: number, name: string) {
 let loader = new THREE.BufferGeometryLoader();
 // --------------Material-----------------------
 const peep_tex = new THREE.TextureLoader().load("peeps/texture.png");
-const typingTexture = new THREE.TextureLoader().load("peeps/texture.png");
-const chatTexture = new THREE.TextureLoader().load("peeps/texture.png");
+//TODO typing Texture
+// const typingTexture = new THREE.TextureLoader().load("peeps/texture.png");
+// const chatTexture = new THREE.TextureLoader().load("peeps/texture.png");
 const peep_material = new THREE.MeshToonMaterial();
 peep_material.emissiveMap = peep_tex;
 peep_material.emissive = new THREE.Color(1, 1, 1);
@@ -528,17 +532,17 @@ function typingBubble(
   playerMesh.add(chatBubble);
 }
 
-function messageBubble(playerMesh: { add: (arg0: THREE.Sprite) => void }) {
-  const chatSprite = new THREE.SpriteMaterial({
-    map: chatTexture,
-    transparent: true,
-  });
-  const chatBubble = new THREE.Sprite(chatSprite);
-  chatBubble.position.y = 5;
-  chatBubble.position.z = 0;
-  chatBubble.position.x = 0;
-  playerMesh.add(chatBubble);
-}
+// function messageBubble(playerMesh: { add: (arg0: THREE.Sprite) => void }) {
+//   const chatSprite = new THREE.SpriteMaterial({
+//     map: chatTexture,
+//     transparent: true,
+//   });
+//   const chatBubble = new THREE.Sprite(chatSprite);
+//   chatBubble.position.y = 5;
+//   chatBubble.position.z = 0;
+//   chatBubble.position.x = 0;
+//   playerMesh.add(chatBubble);
+// }
 
 let Player:any = function (this: {
   playerID: any,
@@ -570,6 +574,8 @@ let Player:any = function (this: {
         controls.init();
       }
     });
+    console.log('Loading Peep Mesh...')
+    return;
   };
 
   this.setOrientation = function (orientation: { position: any }) {
@@ -585,7 +591,6 @@ let Player:any = function (this: {
 // ----------------CHAT APP
 
   // Initialize variables
-  let $window = $(window);
   let $usernameInput:any = $(".usernameInput"); // Input for username
   let $messages = $(".messages"); // Messages area
   let $inputMessage = $(".inputMessage"); // Input message input box
@@ -748,7 +753,7 @@ let Player:any = function (this: {
 
   // Gets the 'X is typing' messages of a user
   function getTypingMessages(data: { username: any }) {
-    return $(".typing.message").filter(function (i: any) {
+    return $(".typing.message").filter(function () {
       return $(this).data("username") === data.username;
     });
   }
@@ -766,7 +771,7 @@ let Player:any = function (this: {
 
   // Keyboard events
 
-  (window as any).onkeydown(function (event: {
+  $(window).keydown(function (event: {
     ctrlKey: any;
     metaKey: any;
     altKey: any;
@@ -862,15 +867,4 @@ let Player:any = function (this: {
   socket.on("stop typing", function (data: any) {
     removeChatTyping(data);
   });
-
-
-
-function loadEnvironment() {
-  let sphere_geometry = new THREE.SphereGeometry(1);
-  let sphere_material = new THREE.MeshNormalMaterial();
-  let sphere = new THREE.Mesh(sphere_geometry, sphere_material);
-  //center
-  scene.add(sphere);
-}
-
 
