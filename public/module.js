@@ -1,5 +1,5 @@
 import * as THREE from "https://cdn.skypack.dev/three";
-
+import { CSS3DRenderer, CSS3DObject } from 'https://threejs.org/examples/jsm/renderers/CSS3DRenderer.js';
 let camera, scene, renderer;
 let geometry, material, mesh;
 
@@ -401,14 +401,22 @@ function init() {
     1000
   );
   camera.position.z = 5;
-
+  
   renderer = new THREE.WebGLRenderer({ alpha: true });
+  var videoSprite = new THREE.Sprite(createVideoTexture('normal-video'));
+  videoSprite.position.y = 1;
+  videoSprite.position.z = 1;
+  videoSprite.position.x = 1;
+  videoSprite.scale.set(1, 1, 1);
+  scene.add(videoSprite)
+  console.log('added');
+  // renderer = new CSS3DRenderer();
   renderer.setSize(window.innerWidth, window.innerHeight);
   // Events
   window.addEventListener("resize", onWindowResize, false);
 
   container.appendChild(renderer.domElement);
-  document.body.appendChild(container);
+  document.body.prepend(container);
 }
 
 function animate() {
@@ -434,6 +442,14 @@ function onWindowResize() {
 
 
 
+function createVideoTexture(id){
+  var video = document.getElementById( id );
+  var texture = new THREE.VideoTexture( video );
+  return new THREE.SpriteMaterial({
+    map: texture,
+    transparent: false,
+  });
+}
 
 function makeLabelCanvas(baseWidth, size, name){
   const domElm = document.createElement('canvas');
@@ -777,6 +793,7 @@ $(function () {
       prepend: true,
     });
     addParticipantsMessage(data);
+
     //didnt work??
     Object.keys(otherPlayers).map(k => {
         console.log('login', data)
