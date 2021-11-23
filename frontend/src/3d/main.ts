@@ -1,12 +1,11 @@
 import * as THREE from "three";
 import * as _ from "lodash";
+import * as ACTIONS from '../domain/actions'
+import { state } from '../index'
 
 let camera: THREE.PerspectiveCamera,
   scene: THREE.Scene,
   renderer: THREE.WebGLRenderer;
-
-let container: any;
-let controls: { update: () => void; init: () => void };
 
 export function init() {
   // Setup
@@ -37,14 +36,15 @@ export function init() {
   renderer.setSize(window.innerWidth, window.innerHeight);
   // Events
   window.addEventListener("resize", onWindowResize, false);
-  document.querySelector('#container')?.appendChild(renderer.domElement)
+  ACTIONS.setCurrentPlayer(io(), scene, camera);
+  document.querySelector('#container')?.appendChild(renderer.domElement);
 }
 
 export function animate() {
   requestAnimationFrame(animate);
 
-  if (controls) {
-    controls.update();
+  if (state.player.controls) {
+    state.player.controls.update();
   }
 
   render();

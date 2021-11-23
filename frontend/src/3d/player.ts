@@ -1,10 +1,8 @@
 import * as THREE from "three";
 import * as _ from "lodash";
 import { PlayerControls } from "./playerControl";
-import peepPNG from "../../textures/texture.png";
-import peepMESH from "../../mesh/peep_one.json";
 import { CanvasTexture } from "three";
-
+import { typingBubble } from '../3d/chat/bubbles';
 //TODO move to canvas section
 function makeLabelCanvas(baseWidth: number, size: number, name: string) {
   const domElm = document.createElement("canvas");
@@ -40,51 +38,53 @@ function makeLabelCanvas(baseWidth: number, size: number, name: string) {
 // --------------Mesh Loader-----------------------
 let loader = new THREE.BufferGeometryLoader();
 // --------------Material-----------------------
-const peep_tex = new THREE.TextureLoader().load(peepPNG);
+const peep_tex = new THREE.TextureLoader().load('/textures/peep.png');
 const peep_material = new THREE.MeshToonMaterial();
 peep_material.emissiveMap = peep_tex;
 peep_material.emissive = new THREE.Color(1, 1, 1);
 
-export const Player: any = function (
-  this: {
-    playerID: any;
-    isMainPlayer: boolean;
-    mesh?: any;
-    init?: any;
-    setOrientation?: any;
-  },
-  playerID: string,
-  scene: any,
-  camera: any,
-  controls: any
-) {
-  this.playerID = playerID;
-  this.isMainPlayer = false;
-  this.mesh;
 
-  let scope = this;
-  this.init = function () {
-    loader.load(peepMESH as unknown as string, function (geometry: any) {
-      const usernameTexture = makeLabelCanvas(
-        playerID.length * 20,
-        24,
-        playerID
-      ) as CanvasTexture;
-      scope.mesh = new THREE.Mesh(geometry, peep_material);
-      scope.mesh.scale.set(0.5, 0.5, 0.5);
-      scope.mesh.rotateY(-180);
-      typingBubble(scope.mesh, usernameTexture);
-      scene.add(scope.mesh);
+export class Player {
+  username: any;
+  isMainPlayer: boolean = false;
+  mesh?: any;
+  scene: any;
+  controls: any;
+  camera: any;
 
-      if (scope.isMainPlayer) {
-        controls = new PlayerControls(camera, scope.mesh);
-        controls.init();
+  constructor(username: string) {
+    this.username = username;
+  }
+  init =  () => {
+    const scope = this;
+    const { username, scene, camera } = this;
+    loader.load("/mesh/peep_one.json" as unknown as string, function (geometry: any) {
+      try {
+        const usernameTexture = makeLabelCanvas(
+          username.length * 20,
+          24,
+          username
+        ) as CanvasTexture;
+        scope.mesh = new THREE.Mesh(geometry, peep_material);
+        scope.mesh.scale.set(0.5, 0.5, 0.5);
+        scope.mesh.rotateY(-180);
+        typingBubble(scope.mesh, usernameTexture);
+        scene.add(scope.mesh);
+  
+        if (scope.isMainPlayer) {
+          scope.controls = new PlayerControls(camera, scope.mesh);
+          scope.controls.init();
+        }
+      } catch(e) {
+        console.log(e);
       }
+
     });
     console.log("Loading Peep Mesh...");
     return;
   };
-  this.setOrientation = function (orientation: { position: any }) {
+  setOrientation = (orientation: { position: any }) => {
+    const scope = this;
     if (scope.mesh) {
       scope.mesh.position.copy(orientation.position);
       //   scope.mesh.rotation.x = rotation.x;
@@ -92,4 +92,4 @@ export const Player: any = function (
       //   scope.mesh.rotation.z = rotation.z;
     }
   };
-};
+}

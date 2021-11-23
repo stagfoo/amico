@@ -2,7 +2,7 @@
    
 import { reducers, State } from './domain/store';
 import { startRouters } from './domain/url';
-import { hydrateState, dehydrateState} from './utils'
+import { hydrateState } from './utils'
 import { createStore } from 'obake.js';
 import { AppRoot } from './ui';
 import { initSocket } from './domain/socket';

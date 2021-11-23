@@ -1,7 +1,6 @@
-const typingTexture = new THREE.TextureLoader().load("peeps/texture.png");
-const chatTexture = new THREE.TextureLoader().load("peeps/texture.png");
+import * as THREE from "three";
 
-function messageBubble(playerMesh: { add: (arg0: THREE.Sprite) => void }, texture: THREE.CanvasTexture) {
+export function messageBubble(playerMesh: { add: (arg0: THREE.Sprite) => void }, texture: THREE.CanvasTexture) {
   const chatSprite = new THREE.SpriteMaterial({
     map: texture,
     transparent: true,
@@ -14,7 +13,7 @@ function messageBubble(playerMesh: { add: (arg0: THREE.Sprite) => void }, textur
 }
 
 // --------------Chat Bubbles-----------------------
-function typingBubble(
+export function typingBubble(
     playerMesh: { add: (arg0: THREE.Sprite) => void },
     texture: THREE.CanvasTexture
   ) {

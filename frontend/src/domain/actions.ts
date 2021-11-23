@@ -39,14 +39,16 @@ export function handleOnUsernameInput(event: any){
   }
 }
 
-export function removeCurrentPlayerTyping(data: any) {
+export function removeCurrentPlayerTyping() {
   state._update("updateTyping", false);
 }
 
 
-export function setCurrentPlayer(socket: any) {
+export function setCurrentPlayer(socket: any, scene:any, camera:any) {
   if (state.username) {
     let player = new Player(state.username);
+    player.scene = scene;
+    player.camera = camera;
     player.isMainPlayer = true;
     player.init();
     // Tell other clients a new user joined
