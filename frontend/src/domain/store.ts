@@ -28,7 +28,7 @@ export type State = {
 
 export const defaultState = {
   currentPage: { name: "HOME", activePage: "/" },
-  username: "",
+  username: "player1",
   player: undefined,
   container: undefined,
   controls: undefined,
