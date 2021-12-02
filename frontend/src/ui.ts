@@ -18,11 +18,8 @@ export function routing(state: State) {
       return usernameInput(state);
     case "GAME":
     return html`
-    <div id="game-container">
-      <div id="container"></div>
-    </div>
+    <video muted id="dash" controls></video>
     ${chatUI(state)}
-    <video id="dash" data-dashjs-player="" autoplay="false" src="https://dash.akamaized.net/akamai/bbb_30fps/bbb_30fps.mpd" controls="true"></video>
   `
     case "EXAMPLE_FETCH":
       return html`
