@@ -1,11 +1,11 @@
-import * as THREE from "three";
 import * as _ from "lodash";
+import * as THREE from "three";
 
 type PlayerObj = {
-  position: { x: number, y: number, z: number},
-  rotation: { x: number, y: number, z: number},
-  username?: string
-}
+  position: { x: number; y: number; z: number };
+  rotation: { x: number; y: number; z: number };
+  username?: string;
+};
 export class PlayerControls {
   player: PlayerObj;
   mesh?: any;
@@ -56,7 +56,7 @@ export class PlayerControls {
     player: any,
     domElement: undefined,
     socket: undefined,
-    orbitcontrols: undefined,
+    orbitcontrols: undefined
   ) {
     this.camera = camera;
     this.orbitcontrols = orbitcontrols;
@@ -108,75 +108,18 @@ export class PlayerControls {
     this.playerIsMoving = false;
 
     this.keyState = {};
-    this.STATE = { NONE: -1, ROTATE: 0, ZOOM: 1, PAN: 2 };
-    this.state = this.STATE.NONE;
-    this.domElement.addEventListener(
-      "contextmenu",
-      function (event: { preventDefault: () => void }) {
-        event.preventDefault();
-      },
-      false
-    );
     document.addEventListener(
       "keydown",
-      (ev: any) => this.onKeyDown(ev, this.keyState),
+      (ev: any) => this.onKeyChange(ev, this.keyState),
       false
     );
     document.addEventListener(
       "keyup",
-      (ev: any) => this.onKeyUp(ev, this.keyState),
+      (ev: any) => this.onKeyChange(ev, this.keyState),
       false
     );
   }
 
-  // events
-  rotateLeft = (angle: number | undefined) => {
-    if (angle === undefined) {
-      angle = this.getAutoRotationAngle();
-    }
-
-    this.thetaDelta -= angle;
-  };
-
-  rotateRight = (angle: number | undefined) => {
-    if (angle === undefined) {
-      angle = this.getAutoRotationAngle();
-    }
-
-    this.thetaDelta += angle;
-  };
-
-  rotateUp = (angle: number | undefined) => {
-    if (angle === undefined) {
-      angle = this.getAutoRotationAngle();
-    }
-
-    this.phiDelta -= angle;
-  };
-
-  rotateDown = (angle: number | undefined) => {
-    if (angle === undefined) {
-      angle = this.getAutoRotationAngle();
-    }
-
-    this.phiDelta += angle;
-  };
-
-  zoomIn = (zoomScale?: number | undefined) => {
-    if (zoomScale === undefined) {
-      zoomScale = this.getZoomScale();
-    }
-
-    this.scale /= zoomScale;
-  };
-
-  zoomOut = (zoomScale?: number | undefined) => {
-    if (zoomScale === undefined) {
-      zoomScale = this.getZoomScale();
-    }
-
-    this.scale *= zoomScale;
-  };
   init = () => {
     this.camera.position.x = this.player.position.x + 2;
     this.camera.position.y = this.player.position.y + 2;
@@ -213,32 +156,11 @@ export class PlayerControls {
     offset.y = radius * Math.cos(phi);
     offset.z = radius * Math.sin(phi) * Math.cos(theta);
 
-    if (this.autoRotate) {
-      // this.camera.position.x +=
-      //   this.autoRotateSpeed *
-      //   (this.player.position.x +
-      //     8 * Math.sin(this.player.rotation.y) -
-      //     this.camera.position.x);
-      // this.camera.position.z +=
-      //   this.autoRotateSpeed *
-      //   (this.player.position.z +
-      //     8 * Math.cos(this.player.rotation.y) -
-      //     this.camera.position.z);
-    } else {
-      position.copy(this.center).add(offset);
-    }
-
     this.camera.lookAt(this.center);
 
     this.thetaDelta = 0;
     this.phiDelta = 0;
     this.scale = 1;
-
-    if (this.state === this.STATE.NONE && this.playerIsMoving) {
-      this.autoRotate = true;
-    } else {
-      this.autoRotate = false;
-    }
 
     if (this.lastPosition.distanceTo(this.player.position) > 0) {
       this.lastPosition.copy(this.player.position);
@@ -248,18 +170,15 @@ export class PlayerControls {
   };
 
   checkKeyStates = () => {
-    if (this.keyState['ArrowUp']) {
-      // up arrow or 'w' - move forward
+    if (this.keyState["ArrowLeft"]) {
       this.playerIsMoving = true;
-
       this.player.position.x -=
         this.moveSpeed * Math.sin(this.player.rotation.y);
       this.player.position.z -=
         this.moveSpeed * Math.cos(this.player.rotation.y);
     }
 
-    if (this.keyState['ArrowDown']) {
-      // down arrow or 's' - move backward
+    if (this.keyState["ArrowRight"]) {
       this.playerIsMoving = true;
 
       this.player.position.x +=
@@ -268,8 +187,7 @@ export class PlayerControls {
         this.moveSpeed * Math.cos(this.player.rotation.y);
     }
 
-    if (this.keyState['ArrowLeft']) {
-      // 'q' - strafe left
+    if (this.keyState["ArrowDown"]) {
       this.playerIsMoving = true;
 
       this.player.position.x -=
@@ -278,8 +196,7 @@ export class PlayerControls {
         this.moveSpeed * Math.sin(this.player.rotation.y);
     }
 
-    if(this.keyState['ArrowRight']) {
-      // 'e' - strage right
+    if (this.keyState["ArrowUp"]) {
       this.playerIsMoving = true;
 
       this.player.position.x +=
@@ -288,11 +205,7 @@ export class PlayerControls {
         this.moveSpeed * Math.sin(this.player.rotation.y);
     }
     if (this.playerIsMoving) {
-      // this.orbitcontrols.target.set( this.player.position.x,
-      //   this.player.position.y,
-      //   this.player.position.z,)
-      this.followCamera()
-      if(_.get(this, 'socket.emit')){
+      if (_.get(this, "socket.emit")) {
         this.socket.emit("player moved", {
           username: this.player.username,
           orientation: {
@@ -312,31 +225,13 @@ export class PlayerControls {
     }
   };
 
-  getAutoRotationAngle = () => {
-    return ((2 * Math.PI) / 60 / 60) * this.autoRotateSpeed;
-  };
-
-  getZoomScale = () => {
-    return Math.pow(0.95, this.userZoomSpeed);
-  };
-
-
-  
-
-  onKeyDown = (event: any | undefined, keyState: any) => {
-    //TODO wtf is this function
+  onKeyChange = (event: any | undefined, keyState: any) => {
     event = event || window.event;
     console.log(event.key);
     keyState[event.key] = true;
   };
 
-  onKeyUp = (event: any | undefined, keyState: any) => {
-    //TODO remove this function
-    event = event || window.event;
-    keyState[event.key] = false;
-  };
   prototype = () => {
     return Object.create(THREE.EventDispatcher.prototype);
-  }
+  };
 }
-

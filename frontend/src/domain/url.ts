@@ -12,7 +12,7 @@ const GAME_PAGE = () => {
   setTimeout(() => {
     init();
     animate();
-    loadDashVideo();
+    // loadDashVideo();
   })
 };
 

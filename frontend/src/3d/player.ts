@@ -72,7 +72,7 @@ export class Player {
         ) as CanvasTexture;
         scope.mesh = new THREE.Mesh(geometry, peep_material);
         scope.mesh.scale.set(0.5, 0.5, 0.5);
-        scope.mesh.rotateY(-180);
+        scope.mesh.rotateY(0);
         typingBubble(scope.mesh, usernameTexture);
         scope.mesh.add(camera);
         scene.add(scope.mesh);
