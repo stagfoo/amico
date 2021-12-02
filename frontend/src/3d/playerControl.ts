@@ -110,12 +110,12 @@ export class PlayerControls {
     this.keyState = {};
     document.addEventListener(
       "keydown",
-      (ev: any) => this.onKeyChange(ev, this.keyState),
+      (ev: any) => this.onKeyChange(ev, this.keyState, true),
       false
     );
     document.addEventListener(
       "keyup",
-      (ev: any) => this.onKeyChange(ev, this.keyState),
+      (ev: any) => this.onKeyChange(ev, this.keyState, false),
       false
     );
   }
@@ -225,10 +225,9 @@ export class PlayerControls {
     }
   };
 
-  onKeyChange = (event: any | undefined, keyState: any) => {
+  onKeyChange = (event: any | undefined, keyState: any, value:boolean) => {
     event = event || window.event;
-    console.log(event.key);
-    keyState[event.key] = true;
+    keyState[event.key] = value;
   };
 
   prototype = () => {

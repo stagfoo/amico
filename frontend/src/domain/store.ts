@@ -23,6 +23,7 @@ export type State = {
   scene: any,
   renderer: any,
   currentChat: string,
+  orbitcontrols: any,
   chatlog: Array<Chat>
 };
 
@@ -41,6 +42,7 @@ export const defaultState = {
   camera: undefined,
   scene: undefined,
   renderer: undefined,
+  orbitcontrols: undefined,
   currentChat: "",
   chatlog: []
 };
@@ -63,6 +65,9 @@ export const reducers = {
   updateTyping: reducer((state: State, value: boolean) => {
     //cant i just check if currentChat is empty
     state.currentPlayerTyping = value;
+  }),
+  updateOrbitcontrols: reducer((state: State, value: any) => {
+    state.orbitcontrols = value;
   }),
   updateConnected: reducer((state: State, value: boolean) => {
     state.connected = value;

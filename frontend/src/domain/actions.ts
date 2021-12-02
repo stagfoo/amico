@@ -53,6 +53,7 @@ export function setCurrentPlayer(socket: any, scene:any, camera:any, container: 
     player.init();
     // Tell other clients a new user joined
     state._update("updateCurrentPlayer", player);
+    state._update("updateOrbitcontrols", orbitcontrols);
     if(socket){
       socket().emit("add user", {
         username: state.username,
@@ -74,7 +75,7 @@ export function socketOnLogin(data: any) {
     if (!Object.keys(data.currentUsers).includes(k)) {
       state._update("addOtherPlayer", {
         id: k,
-        player: new Player(k, state.container, state.socket),
+        player: new Player(k, state.container, state.socket, state.orbitcontrols),
       });
       state.otherPlayers[k].init();
     }
@@ -83,7 +84,7 @@ export function socketOnLogin(data: any) {
 export function socketOnPlayerMoved(data: any) {
   const otherPlayers = state.otherPlayers;
   if (!Object.keys(otherPlayers).includes(data.username)) {
-    otherPlayers[data.username] = new Player(data.username, state.container, state.socket);
+    otherPlayers[data.username] = new Player(data.username, state.container, state.socket, state.orbitcontrols);
     otherPlayers[data.username].init();
   }
   console.log(otherPlayers);
@@ -101,7 +102,7 @@ export function socketOnUserJoined(
   if (state.username != data.username && !state.otherPlayers[data.username]) {
     state._update("addOtherPlayer", {
       id: data.username,
-      player: new Player(data.username, state.container, state.socket),
+      player: new Player(data.username, state.container, state.socket, state.orbitcontrols),
     });
     state.otherPlayers[data.username].init();
   }
