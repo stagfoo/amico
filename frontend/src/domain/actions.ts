@@ -44,19 +44,21 @@ export function removeCurrentPlayerTyping() {
 }
 
 
-export function setCurrentPlayer(socket: any, scene:any, camera:any, container: any) {
+export function setCurrentPlayer(socket: any, scene:any, camera:any, container: any, orbitcontrols:any) {
   if (state.username) {
-    let player = new Player(state.username, container, socket);
+    let player = new Player(state.username, container, socket, orbitcontrols);
     player.scene = scene;
     player.camera = camera;
     player.isMainPlayer = true;
     player.init();
     // Tell other clients a new user joined
     state._update("updateCurrentPlayer", player);
-    socket.emit("add user", {
-      username: state.username,
-      orientation: {},
-    });
+    if(socket){
+      socket().emit("add user", {
+        username: state.username,
+        orientation: {},
+      });
+    }
   }
 }
 

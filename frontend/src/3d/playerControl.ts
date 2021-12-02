@@ -1,8 +1,13 @@
 import * as THREE from "three";
 import * as _ from "lodash";
 
+type PlayerObj = {
+  position: { x: number, y: number, z: number},
+  rotation: { x: number, y: number, z: number},
+  username?: string
+}
 export class PlayerControls {
-  player: any;
+  player: PlayerObj;
   mesh?: any;
   scene: any;
   controls: any;
@@ -44,14 +49,17 @@ export class PlayerControls {
   keyState: any;
   STATE: any;
   state: any;
+  orbitcontrols: any;
 
   constructor(
     camera: any,
     player: any,
     domElement: undefined,
-    socket: undefined
+    socket: undefined,
+    orbitcontrols: undefined,
   ) {
     this.camera = camera;
+    this.orbitcontrols = orbitcontrols;
     this.player = player;
     this.socket = socket;
     this.domElement = domElement !== undefined ? domElement : document;
@@ -109,19 +117,12 @@ export class PlayerControls {
       },
       false
     );
-    this.domElement.addEventListener("mousedown", this.onMouseDown, false);
-    this.domElement.addEventListener("mousewheel", this.onMouseWheel, false);
-    this.domElement.addEventListener(
-      "DOMMouseScroll",
-      this.onMouseWheel,
-      false
-    ); // firefox
-    this.domElement.addEventListener(
+    document.addEventListener(
       "keydown",
       (ev: any) => this.onKeyDown(ev, this.keyState),
       false
     );
-    this.domElement.addEventListener(
+    document.addEventListener(
       "keyup",
       (ev: any) => this.onKeyUp(ev, this.keyState),
       false
@@ -176,12 +177,11 @@ export class PlayerControls {
 
     this.scale *= zoomScale;
   };
-
   init = () => {
     this.camera.position.x = this.player.position.x + 2;
     this.camera.position.y = this.player.position.y + 2;
     this.camera.position.z = this.player.position.x + 2;
-    this.camera.lookAt(this.player.position);
+    // this.camera.lookAt(this.player.position);
   };
 
   update = () => {
@@ -214,16 +214,16 @@ export class PlayerControls {
     offset.z = radius * Math.sin(phi) * Math.cos(theta);
 
     if (this.autoRotate) {
-      this.camera.position.x +=
-        this.autoRotateSpeed *
-        (this.player.position.x +
-          8 * Math.sin(this.player.rotation.y) -
-          this.camera.position.x);
-      this.camera.position.z +=
-        this.autoRotateSpeed *
-        (this.player.position.z +
-          8 * Math.cos(this.player.rotation.y) -
-          this.camera.position.z);
+      // this.camera.position.x +=
+      //   this.autoRotateSpeed *
+      //   (this.player.position.x +
+      //     8 * Math.sin(this.player.rotation.y) -
+      //     this.camera.position.x);
+      // this.camera.position.z +=
+      //   this.autoRotateSpeed *
+      //   (this.player.position.z +
+      //     8 * Math.cos(this.player.rotation.y) -
+      //     this.camera.position.z);
     } else {
       position.copy(this.center).add(offset);
     }
@@ -248,7 +248,7 @@ export class PlayerControls {
   };
 
   checkKeyStates = () => {
-    if (this.keyState[38] || this.keyState[87]) {
+    if (this.keyState['ArrowUp']) {
       // up arrow or 'w' - move forward
       this.playerIsMoving = true;
 
@@ -258,7 +258,7 @@ export class PlayerControls {
         this.moveSpeed * Math.cos(this.player.rotation.y);
     }
 
-    if (this.keyState[40] || this.keyState[83]) {
+    if (this.keyState['ArrowDown']) {
       // down arrow or 's' - move backward
       this.playerIsMoving = true;
 
@@ -268,7 +268,7 @@ export class PlayerControls {
         this.moveSpeed * Math.cos(this.player.rotation.y);
     }
 
-    if (this.keyState[81] || this.keyState[37] || this.keyState[65]) {
+    if (this.keyState['ArrowLeft']) {
       // 'q' - strafe left
       this.playerIsMoving = true;
 
@@ -278,7 +278,7 @@ export class PlayerControls {
         this.moveSpeed * Math.sin(this.player.rotation.y);
     }
 
-    if (this.keyState[39] || this.keyState[68] || this.keyState[69]) {
+    if(this.keyState['ArrowRight']) {
       // 'e' - strage right
       this.playerIsMoving = true;
 
@@ -288,21 +288,27 @@ export class PlayerControls {
         this.moveSpeed * Math.sin(this.player.rotation.y);
     }
     if (this.playerIsMoving) {
-      this.socket.emit("player moved", {
-        username: this.player.username,
-        orientation: {
-          position: {
-            x: this.player.position.x,
-            y: this.player.position.y,
-            z: this.player.position.z,
+      // this.orbitcontrols.target.set( this.player.position.x,
+      //   this.player.position.y,
+      //   this.player.position.z,)
+      this.followCamera()
+      if(_.get(this, 'socket.emit')){
+        this.socket.emit("player moved", {
+          username: this.player.username,
+          orientation: {
+            position: {
+              x: this.player.position.x,
+              y: this.player.position.y,
+              z: this.player.position.z,
+            },
+            rotation: {
+              x: this.player.rotation.x,
+              y: this.player.rotation.y,
+              z: this.player.rotation.z,
+            },
           },
-          rotation: {
-            x: this.player.rotation.x,
-            y: this.player.rotation.y,
-            z: this.player.rotation.z,
-          },
-        },
-      });
+        });
+      }
     }
   };
 
@@ -314,104 +320,20 @@ export class PlayerControls {
     return Math.pow(0.95, this.userZoomSpeed);
   };
 
-  onMouseDown = (event: {
-    preventDefault: () => void;
-    button: number;
-    clientX: number;
-    clientY: number;
-  }) => {
-    if (this.enabled === false) return;
-    if (this.userRotate === false) return;
 
-    event.preventDefault();
+  
 
-    if (event.button === 0) {
-      this.state = this.STATE.ROTATE;
-
-      this.rotateStart.set(event.clientX, event.clientY);
-    } else if (event.button === 1) {
-      this.state = this.STATE.ZOOM;
-      this.zoomStart.set(event.clientX, event.clientY);
-    }
-
-    document.addEventListener("mousemove", this.onMouseMove, false);
-    document.addEventListener("mouseup", this.onMouseUp, false);
-  };
-
-  onMouseMove = (event: {
-    preventDefault: () => void;
-    clientX: number;
-    clientY: number;
-  }) => {
-    if (this.enabled === false) return;
-    event.preventDefault();
-    if (this.state === this.STATE.ROTATE) {
-      this.rotateEnd.set(event.clientX, event.clientY);
-      this.rotateDelta.subVectors(this.rotateEnd, this.rotateStart);
-      this.rotateLeft(
-        ((2 * Math.PI * this.rotateDelta.x) / this.PIXELS_PER_ROUND) *
-          this.userRotateSpeed
-      );
-      this.rotateUp(
-        ((2 * Math.PI * this.rotateDelta.y) / this.PIXELS_PER_ROUND) *
-          this.userRotateSpeed
-      );
-      this.rotateStart.copy(this.rotateEnd);
-    } else if (this.state === this.STATE.ZOOM) {
-      this.zoomEnd.set(event.clientX, event.clientY);
-      this.zoomDelta.subVectors(this.zoomEnd, this.zoomStart);
-
-      if (this.zoomDelta.y > 0) {
-        this.zoomIn();
-      } else {
-        this.zoomOut();
-      }
-
-      this.zoomStart.copy(this.zoomEnd);
-    }
-  };
-
-  onMouseUp = () => {
-    if (this.enabled === false) return;
-    if (this.userRotate === false) return;
-
-    document.removeEventListener("mousemove", this.onMouseMove, false);
-    document.removeEventListener("mouseup", this.onMouseUp, false);
-
-    this.state = this.STATE.NONE;
-  };
-
-  onMouseWheel = (event: { wheelDelta: number; detail: number }) => {
-    if (this.enabled === false) return;
-    if (this.userRotate === false) return;
-
-    let delta = 0;
-
-    if (event.wheelDelta) {
-      //WebKit / Opera / Explorer 9
-      delta = event.wheelDelta;
-    } else if (event.detail) {
-      // Firefox
-      delta = -event.detail;
-    }
-
-    if (delta > 0) {
-      this.zoomOut();
-    } else {
-      this.zoomIn();
-    }
-  };
   onKeyDown = (event: any | undefined, keyState: any) => {
     //TODO wtf is this function
     event = event || window.event;
     console.log(event.key);
-    keyState[event.keyCode || event.which] = true;
+    keyState[event.key] = true;
   };
 
   onKeyUp = (event: any | undefined, keyState: any) => {
     //TODO remove this function
     event = event || window.event;
-    keyState[event.keyCode || event.which] = false;
+    keyState[event.key] = false;
   };
   prototype = () => {
     return Object.create(THREE.EventDispatcher.prototype);

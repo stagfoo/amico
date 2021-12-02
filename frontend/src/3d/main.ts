@@ -1,4 +1,5 @@
 import * as THREE from "three";
+import OrbitControls from 'three-orbitcontrols';
 import * as _ from "lodash";
 import * as ACTIONS from '../domain/actions'
 import { state } from '../index'
@@ -36,10 +37,10 @@ export function init() {
   renderer.setSize(window.innerWidth, window.innerHeight);
   // Events
   window.addEventListener("resize", onWindowResize, false);
-  if(window['io']){
-    ACTIONS.setCurrentPlayer(io(), scene, camera, renderer.domElement);
-  }
+  const orbitcontrols = new OrbitControls( camera, renderer.domElement );
+  ACTIONS.setCurrentPlayer(window['io'], scene, camera, renderer.domElement, orbitcontrols);
   container?.appendChild(renderer.domElement);
+
 }
 
 export function animate() {

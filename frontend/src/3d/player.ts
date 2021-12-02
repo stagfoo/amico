@@ -53,11 +53,12 @@ export class Player {
   camera: any;
   container: any
   socket: any
-  
-  constructor(username: string, container: any, socket: any) {
+  orbitcontrols: any
+  constructor(username: string, container: any, socket: any, orbitcontrols:any) {
     this.username = username;
     this.container = container
     this.socket = socket
+    this.orbitcontrols = orbitcontrols
   }
   init =  () => {
     const scope = this;
@@ -73,10 +74,11 @@ export class Player {
         scope.mesh.scale.set(0.5, 0.5, 0.5);
         scope.mesh.rotateY(-180);
         typingBubble(scope.mesh, usernameTexture);
+        scope.mesh.add(camera);
         scene.add(scope.mesh);
-  
+        
         if (scope.isMainPlayer) {
-          scope.controls = new PlayerControls(camera, scope.mesh, scope.container, scope.socket);
+          scope.controls = new PlayerControls(camera, scope.mesh, scope.container, scope.socket, scope.orbitcontrols);
           scope.controls.init();
         }
       } catch(e) {
