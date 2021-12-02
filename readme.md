@@ -1,4 +1,4 @@
-#  🎪 amico
+#  🎪 amìco
 a open-source virtual summit program
 
 ## Planned features
