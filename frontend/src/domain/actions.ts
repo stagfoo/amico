@@ -44,9 +44,9 @@ export function removeCurrentPlayerTyping() {
 }
 
 
-export function setCurrentPlayer(socket: any, scene:any, camera:any) {
+export function setCurrentPlayer(socket: any, scene:any, camera:any, container: any) {
   if (state.username) {
-    let player = new Player(state.username);
+    let player = new Player(state.username, container, socket);
     player.scene = scene;
     player.camera = camera;
     player.isMainPlayer = true;
@@ -72,7 +72,7 @@ export function socketOnLogin(data: any) {
     if (!Object.keys(data.currentUsers).includes(k)) {
       state._update("addOtherPlayer", {
         id: k,
-        player: new Player(k),
+        player: new Player(k, state.container, state.socket),
       });
       state.otherPlayers[k].init();
     }
@@ -81,7 +81,7 @@ export function socketOnLogin(data: any) {
 export function socketOnPlayerMoved(data: any) {
   const otherPlayers = state.otherPlayers;
   if (!Object.keys(otherPlayers).includes(data.username)) {
-    otherPlayers[data.username] = new Player(data.username);
+    otherPlayers[data.username] = new Player(data.username, state.container, state.socket);
     otherPlayers[data.username].init();
   }
   console.log(otherPlayers);
@@ -99,7 +99,7 @@ export function socketOnUserJoined(
   if (state.username != data.username && !state.otherPlayers[data.username]) {
     state._update("addOtherPlayer", {
       id: data.username,
-      player: new Player(data.username),
+      player: new Player(data.username, state.container, state.socket),
     });
     state.otherPlayers[data.username].init();
   }

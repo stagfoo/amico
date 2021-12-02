@@ -51,9 +51,13 @@ export class Player {
   scene: any;
   controls: any;
   camera: any;
-
-  constructor(username: string) {
+  container: any
+  socket: any
+  
+  constructor(username: string, container: any, socket: any) {
     this.username = username;
+    this.container = container
+    this.socket = socket
   }
   init =  () => {
     const scope = this;
@@ -72,7 +76,7 @@ export class Player {
         scene.add(scope.mesh);
   
         if (scope.isMainPlayer) {
-          scope.controls = new PlayerControls(camera, scope.mesh);
+          scope.controls = new PlayerControls(camera, scope.mesh, scope.container, scope.socket);
           scope.controls.init();
         }
       } catch(e) {

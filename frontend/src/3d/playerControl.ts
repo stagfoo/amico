@@ -413,6 +413,8 @@ export class PlayerControls {
     event = event || window.event;
     keyState[event.keyCode || event.which] = false;
   };
+  prototype = () => {
+    return Object.create(THREE.EventDispatcher.prototype);
+  }
 }
 
-PlayerControls.prototype = Object.create(THREE.EventDispatcher.prototype);
