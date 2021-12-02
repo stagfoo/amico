@@ -1,6 +1,7 @@
 import page from 'page';
 import { state } from '../index';
 import { init, animate } from '../3d/main'
+import { loadDashVideo } from '../video';
 
 // Handlers
 const HOME_PAGE = () => {
@@ -11,6 +12,7 @@ const GAME_PAGE = () => {
   setTimeout(() => {
     init();
     animate();
+    loadDashVideo();
   })
 };
 
