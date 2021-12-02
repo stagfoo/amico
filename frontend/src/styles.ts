@@ -97,19 +97,31 @@ export function BaseStyles() {
       ${buttonStyle()}
       margin-right: ${DS.gutters.sm}px;
     }
+    #app {
+      position: absolute;
+      z-index: 10;
+    }
     #game-container {
       background: #fff;
-      position: relative;
+      position: absolute;
       z-index: 9;
       height: 100vh;
+      top:0px;
+      width: 100vw;
     }
     video {
       width: 100vw;
       height: auto;
       position: absolute;
       z-index: 0;
-      top: 0;
-      left: 0;
+      top: -100vh;
+      left: -100vw;
+    }
+    .username-input {
+      position: absolute;
+      top: 50vh;
+      width: 50vw;
+      font-size: 24;
     }
     @keyframes notification {
       from {bottom: -120vh;}
