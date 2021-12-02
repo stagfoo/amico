@@ -9,7 +9,7 @@ let camera: THREE.PerspectiveCamera,
 
 export function init() {
   // Setup
-
+  let container = document.querySelector('#container');
   scene = new THREE.Scene();
   let axes = new THREE.AxesHelper(5);
   scene.add(axes);
@@ -36,14 +36,16 @@ export function init() {
   renderer.setSize(window.innerWidth, window.innerHeight);
   // Events
   window.addEventListener("resize", onWindowResize, false);
-  ACTIONS.setCurrentPlayer(io(), scene, camera);
-  document.querySelector('#container')?.appendChild(renderer.domElement);
+  if(window['io']){
+    ACTIONS.setCurrentPlayer(io(), scene, camera, renderer.domElement);
+  }
+  container?.appendChild(renderer.domElement);
 }
 
 export function animate() {
   requestAnimationFrame(animate);
 
-  if (state.player.controls) {
+  if (_.get(state, 'player.controls', false)) {
     state.player.controls.update();
   }
 
