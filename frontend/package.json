@@ -1,6 +1,6 @@
 {
   "name": "amico",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "scripts": {
     "dev": "vite",
     "start": "vite",
@@ -17,6 +17,7 @@
   },
   "dependencies": {
     "@types/socket.io": "^3.0.2",
+    "dashjs": "^4.1.0",
     "joro": "^1.0.4",
     "lodash": "^4.17.21",
     "nanohtml": "^1.9.1",
