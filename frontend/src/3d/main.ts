@@ -27,11 +27,11 @@ export function init() {
   camera.position.z = 5;
 
   renderer = new THREE.WebGLRenderer({ alpha: true });
-  let videoSprite = new THREE.Sprite(createVideoTexture("dash-video"));
-  videoSprite.position.y = 1;
-  videoSprite.position.z = 1;
-  videoSprite.position.x = 1;
-  videoSprite.scale.set(1, 1, 1);
+  let videoSprite = new THREE.Sprite(createVideoTexture("dash"));
+  videoSprite.position.y = 15;
+  videoSprite.position.z = -50;
+  videoSprite.position.x = -50;
+  videoSprite.scale.set(1.6*30, 1*30, 1*30);
   scene.add(videoSprite);
   console.log("added");
   renderer.setSize(window.innerWidth, window.innerHeight);

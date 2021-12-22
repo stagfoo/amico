@@ -10,9 +10,9 @@ const HOME_PAGE = () => {
 const GAME_PAGE = () => {
   state._update('updateCurrentPage', 'GAME');
   setTimeout(() => {
+    loadDashVideo();
     init();
     animate();
-    // loadDashVideo();
   })
 };
 
