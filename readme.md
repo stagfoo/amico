@@ -8,6 +8,10 @@ a open-source virtual summit program
 - sound management for videos in game
 - floating dashjs videos from youtube
 
+## peeps
+there are a few other project focused on random characters
+I think peep can also be similar to [Gridy](https://github.com/darosh/gridy-avatars or [Give me avatar](https://github.com/ClydeDz/give-me-an-avatar-npm)
+
 # Inspirations
 
 I saw a virtual summit this year and while it and i love animal crossing so i wanted to make a simple virtual space for everyone.
