@@ -169,6 +169,22 @@ export class PlayerControls {
     }
   };
 
+  faceDown = () => {
+    //TODO rotate the player mesh down
+  }
+  faceRight = () => {
+    //TODO rotate the player mesh right
+
+  }
+  faceUp = () => {
+    //TODO rotate the player mesh up
+
+  }
+  faceLeft = () => {
+    //TODO rotate the player mesh left
+
+  }
+
   checkKeyStates = () => {
     if (this.keyState["ArrowLeft"]) {
       this.playerIsMoving = true;
