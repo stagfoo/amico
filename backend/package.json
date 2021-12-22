@@ -4,6 +4,7 @@
 	"description": "A node js chat app",
 	"main": "dist/server.js",
 	"scripts": {
+		"prestart": "npm run build",
 		"start": "cd dist && node server.js",
 		"build": "tsc --resolveJsonModule"
 	},
