@@ -10,7 +10,7 @@ a open-source virtual summit program
 
 ## peeps
 there are a few other project focused on random characters
-I think peep can also be similar to [Gridy](https://github.com/darosh/gridy-avatars or [Give me avatar](https://github.com/ClydeDz/give-me-an-avatar-npm)
+I think peep can also be similar to [Gridy](https://github.com/darosh/gridy-avatars) or [Give me avatar](https://github.com/ClydeDz/give-me-an-avatar-npm)
 
 # Inspirations
 
