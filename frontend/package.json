@@ -4,7 +4,10 @@
   "scripts": {
     "dev": "vite",
     "start": "vite",
-    "build": "tsc && vite build",
+    "build": "tsc && vite build --emptyOutDir",
+    "copy:textures": "cp -R textures ../backend/dist/public/textures",
+    "copy:mesh": "cp -R mesh ../backend/dist/public/mesh",
+    "postbuild": "npm run copy:mesh && npm run copy:textures",
     "serve": "vite preview"
   },
   "devDependencies": {
