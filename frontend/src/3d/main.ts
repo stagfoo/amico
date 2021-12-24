@@ -29,8 +29,8 @@ export function init() {
   renderer = new THREE.WebGLRenderer({ alpha: true });
   let videoSprite = new THREE.Sprite(createVideoTexture("dash"));
   videoSprite.position.y = 15;
-  videoSprite.position.z = -50;
-  videoSprite.position.x = -50;
+  videoSprite.position.z = 50;
+  videoSprite.position.x = 50;
   videoSprite.scale.set(1.6*30, 1*30, 1*30);
   scene.add(videoSprite);
   console.log("added");
