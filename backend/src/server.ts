@@ -10,7 +10,7 @@ server.listen(port, function () {
 });
 
 // Routing
-app.use(express.static('public'));
+app.use(express.static('backend/dist/public'));
 
 // Chatroom
 
