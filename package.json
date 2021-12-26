@@ -6,6 +6,8 @@
 	"scripts": {
         "prestart": "npm run build:back && npm run build:front",
 		"start": "node backend/dist/server.js",
+		"deploy": "cd backend/dist/ && now",
+		"build": "npm run build:back && npm run build:front",
         "build:front": "cd frontend && npm install && npm run build",
         "build:back": "cd backend && npm install && npm run build"
 	},
@@ -21,9 +23,7 @@
 		"typescript": "^4.4.4",
 		"yt-live-url": "^1.0.1"
 	},
-	"engines": {
-		"node": "4.4.5"
-	},
+	"engines": { "node": "12.x" },
 	"keywords": [
 		"node",
 		"hyperdev",

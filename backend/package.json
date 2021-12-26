@@ -21,7 +21,7 @@
 		"yt-live-url": "^1.0.1"
 	},
 	"engines": {
-		"node": "4.4.5"
+		"node": "12.x"
 	},
 	"keywords": [
 		"node",

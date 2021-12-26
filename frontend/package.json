@@ -19,6 +19,9 @@
     "typescript": "^4.3.2",
     "vite": "^2.6.4"
   },
+  "engines": {
+    "node": "12.x"
+  },
   "dependencies": {
     "@types/socket.io": "^3.0.2",
     "dashjs": "^4.1.0",
