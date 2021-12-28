@@ -7,9 +7,9 @@
 		"prestart": "npm run build:back && npm run build:front",
 		"start": "node bundle/server.js",
 		"deploy": "cd backend/dist/ && now",
-		"build": "npm run build:back && npm run build:front",
-		"build:front": "cd frontend && npm install && npm run build",
-		"build:back": "cd backend && npm install && npm run build"
+		"bundle": "npm run build:back && npm run build:front",
+		"bundle:front": "cd frontend && npm install && npm run build",
+		"bundle:back": "cd backend && npm install && npm run build"
 	},
 	"dependencies": {
 		"@thelevicole/youtube-to-html5-loader": "^4.0.1",
