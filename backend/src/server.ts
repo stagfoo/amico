@@ -12,6 +12,10 @@ server.listen(port, function () {
 // Routing
 app.use(express.static('backend/dist/public'));
 
+app.get('/game', (req, res) => {
+  res.redirect('/');
+});
+
 // Chatroom
 
 var numUsers = 0;
