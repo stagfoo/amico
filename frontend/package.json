@@ -5,8 +5,8 @@
     "dev": "vite",
     "start": "vite",
     "build": "tsc && vite build --emptyOutDir",
-    "copy:textures": "cp -R textures ../bundle/public/",
-    "copy:mesh": "cp -R mesh ../bundle/public/mesh",
+    "copy:textures": "cp -R textures ../backend/dist/public/",
+    "copy:mesh": "cp -R mesh ../backend/dist/public/",
     "postbuild": "npm run copy:mesh && npm run copy:textures",
     "serve": "vite preview"
   },
