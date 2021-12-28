@@ -33,14 +33,14 @@ export function init() {
   videoSprite.position.x = 50;
   videoSprite.scale.set(1.6*30, 1*30, 1*30);
   scene.add(videoSprite);
-  console.log("added");
   renderer.setSize(window.innerWidth, window.innerHeight);
   // Events
   window.addEventListener("resize", onWindowResize, false);
   const orbitcontrols = new OrbitControls( camera, renderer.domElement );
   ACTIONS.setCurrentPlayer(window['io'], scene, camera, renderer.domElement, orbitcontrols);
   container?.appendChild(renderer.domElement);
-
+  state._update('updateScene', scene)
+  state._update('updateCamera', camera)
 }
 
 export function animate() {

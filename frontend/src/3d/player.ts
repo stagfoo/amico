@@ -3,6 +3,7 @@ import * as _ from "lodash";
 import { PlayerControls } from "./playerControl";
 import { CanvasTexture } from "three";
 import { typingBubble } from '../3d/chat/bubbles';
+import { state } from '../index';
 //TODO move to canvas section
 function makeLabelCanvas(baseWidth: number, size: number, name: string) {
   const domElm = document.createElement("canvas");
@@ -62,7 +63,8 @@ export class Player {
   }
   init =  () => {
     const scope = this;
-    const { username, scene, camera } = this;
+    const { username } = this;
+
     loader.load("/mesh/peep_one.json" as unknown as string, function (geometry: any) {
       try {
         const usernameTexture = makeLabelCanvas(
@@ -74,11 +76,11 @@ export class Player {
         scope.mesh.scale.set(0.5, 0.5, 0.5);
         scope.mesh.rotateY(0);
         typingBubble(scope.mesh, usernameTexture);
-        scope.mesh.add(camera);
-        scene.add(scope.mesh);
+        state.scene.add(scope.mesh);
         
         if (scope.isMainPlayer) {
-          scope.controls = new PlayerControls(camera, scope.mesh, scope.container, scope.socket, scope.orbitcontrols);
+          scope.mesh.add(state.camera);
+          scope.controls = new PlayerControls(state.camera, scope.mesh, scope.container, scope.socket, scope.orbitcontrols);
           scope.controls.init();
         }
       } catch(e) {
@@ -93,9 +95,6 @@ export class Player {
     const scope = this;
     if (scope.mesh) {
       scope.mesh.position.copy(orientation.position);
-      //   scope.mesh.rotation.x = rotation.x;
-      //   scope.mesh.rotation.y = rotation.y;
-      //   scope.mesh.rotation.z = rotation.z;
     }
   };
 }
