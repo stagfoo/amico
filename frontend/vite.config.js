@@ -1,6 +1,6 @@
 export default {
   build: {
-    outDir: '../backend/dist/public'
+    outDir: '../bundle/public'
   },
   server: {
     port: "9991",
