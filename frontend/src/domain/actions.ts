@@ -67,9 +67,8 @@ export function socketOnNewMessage(data: any) {
   state._update("addNewChatMessage", data);
 }
 export function socketOnLogin(data: any) {
+  console.log('@player login', data);
   state._update("updateConnected", true);
-  console.log("Welcome to Socket.IO Chat – " + data.username);
-  //TODO welcome message?
   Object.keys(state.otherPlayers).map((k) => {
     console.log("login", data);
     if (!Object.keys(data.currentUsers).includes(k)) {
@@ -83,6 +82,7 @@ export function socketOnLogin(data: any) {
 }
 export function socketOnPlayerMoved(data: any) {
   const otherPlayers = state.otherPlayers;
+  console.log('@player moved', data);
   if (!Object.keys(otherPlayers).includes(data.username)) {
     otherPlayers[data.username] = new Player(data.username, state.container, state.socket, state.orbitcontrols);
     otherPlayers[data.username].init();
@@ -99,6 +99,7 @@ export function socketOnUserLeft(data: any) {
 export function socketOnUserJoined(
   data: any,
 ) {
+  console.log('@player joined', data);
   if (state.username != data.username && !state.otherPlayers[data.username]) {
     state._update("addOtherPlayer", {
       id: data.username,

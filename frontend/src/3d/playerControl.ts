@@ -1,5 +1,6 @@
 import * as _ from "lodash";
 import * as THREE from "three";
+import {state } from '../index';
 
 type PlayerObj = {
   position: { x: number; y: number; z: number };
@@ -221,9 +222,9 @@ export class PlayerControls {
         this.moveSpeed * Math.sin(this.player.rotation.y);
     }
     if (this.playerIsMoving) {
-      if (_.get(this, "socket.emit")) {
-        this.socket.emit("player moved", {
-          username: this.player.username,
+      if (_.get(state, "socket.emit")) {
+        state.socket.emit("player moved", {
+          username: state.username,
           orientation: {
             position: {
               x: this.player.position.x,
@@ -237,6 +238,8 @@ export class PlayerControls {
             },
           },
         });
+      } else {
+        console.log('@player moved: no socket to emit too')
       }
     }
   };
