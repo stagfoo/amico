@@ -5,7 +5,7 @@
     "dev": "vite",
     "start": "vite",
     "build": "tsc && vite build --emptyOutDir",
-    "copy:textures": "cp -R textures ../backend/dist/public/textures",
+    "copy:textures": "cp -R textures ../backend/dist/public/",
     "copy:mesh": "cp -R mesh ../backend/dist/public/mesh",
     "postbuild": "npm run copy:mesh && npm run copy:textures",
     "serve": "vite preview"
@@ -18,9 +18,6 @@
     "three-orbitcontrols": "^2.110.3",
     "typescript": "^4.3.2",
     "vite": "^2.6.4"
-  },
-  "engines": {
-    "node": "12.x"
   },
   "dependencies": {
     "@types/socket.io": "^3.0.2",
