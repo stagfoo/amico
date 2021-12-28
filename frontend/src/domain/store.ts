@@ -75,6 +75,12 @@ export const reducers = {
   updateUsername: reducer((state: State, value: string) => {
     state.username = value;
   }),
+  updateScene: reducer((state: State, value: string) => {
+    state.scene = value;
+  }),
+  updateCamera: reducer((state: State, value: string) => {
+    state.camera = value;
+  }),
   updateCurrentPlayer: reducer((state: State, value: any) => {
     state.player = value;
   }),
