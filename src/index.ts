@@ -6,7 +6,7 @@ import { hydrateState } from './utils'
 import { createStore } from 'obake.js';
 import { AppRoot } from './ui';
 import { initSocket } from './domain/socket';
-import { BaseStyles  } from './styles';
+import { BaseStyles, IntroWizard, UIStyles  } from './styles';
 import morph from 'nanomorph';
 
 //Default render
@@ -38,6 +38,8 @@ function renderer(newState: State) {
 //Start Router listener
 startRouters();
 BaseStyles();
+IntroWizard();
+UIStyles();
 if(window['io']){
   initSocket(io());
 }
