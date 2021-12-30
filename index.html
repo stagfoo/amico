@@ -1,21 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite App</title>
-    <script src="https://code.jquery.com/jquery-2.2.2.min.js"></script>
-    <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
-  </head>
-  <body>
-    <div id="game-container">
-      <div id="container"></div>
-    </div>
-    <div id="app"></div>
-    
-    
-    <script type="module" src="/src/index.ts"></script>
-    <script src="/socket.io/socket.io.js"></script>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="favicon.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vite App</title>
+  <script src="https://code.jquery.com/jquery-2.2.2.min.js"></script>
+  <script src="https://cdn.dashjs.org/latest/dash.all.min.js"></script>
+  <style>
+    @font-face {
+      font-family: 'franxurter';
+      src: url('fonts/franxurter-w11d9-webfont.woff2') format('woff2'),
+        url('fonts/franxurter-w11d9-webfont.woff') format('woff');
+      font-weight: normal;
+      font-style: normal;
+    }
+  </style>
+</head>
+
+<body>
+  <div id="game-container">
+    <div id="container"></div>
+  </div>
+  <div id="app"></div>
+
+
+  <script type="module" src="/src/index.ts"></script>
+  <script src="/socket.io/socket.io.js"></script>
+</body>
+
 </html>
