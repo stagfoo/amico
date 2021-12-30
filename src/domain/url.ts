@@ -15,10 +15,14 @@ const GAME_PAGE = () => {
     animate();
   })
 };
+const PLAYER_SELECT = () => {
+  state._update('updateCurrentPage', 'PLAYER_SELECT');
+};
 
 // Routes
 page('/', HOME_PAGE);
 page('/game', GAME_PAGE);
+page('/player-select', PLAYER_SELECT);
 
 
 export function startRouters(): void {

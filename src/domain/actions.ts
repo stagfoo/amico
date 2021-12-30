@@ -35,6 +35,15 @@ export function handleOnUsernameInput(event: any){
   const elm: any = event.target;
   state._update("updateUsername", elm?.value);
   if(event.which === 13){
+    page('/player-select')
+  }
+}
+
+export function handleNextButton(){
+  if(state.currentPage.name === "HOME") {
+    page('/player-select')
+  }
+  if(state.currentPage.name === "PLAYER_SELECT") {
     page('/game')
   }
 }

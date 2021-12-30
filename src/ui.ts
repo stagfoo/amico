@@ -5,9 +5,7 @@ import * as ACTIONS from './domain/actions'
 export function AppRoot(state: State) {
   return html`
   <div id="app">
-      <div class="page">
         ${routing(state)}
-      </div>
     </div>
   `
 }
@@ -15,16 +13,29 @@ export function AppRoot(state: State) {
 export function routing(state: State) {
   switch (state.currentPage.name) {
     case "HOME":
-      return usernameInput(state);
+      return html`
+        <section class="container circle">
+        <header>
+        <h1>Amico</h1>
+        <h3>seperate together</h3>
+        </header>
+        <div>
+          ${usernameInput(state)}
+          ${nextButton(state)}
+          </div>
+        </section>
+      `
     case "GAME":
     return html`
     <video muted id="dash" controls></video>
     ${chatUI(state)}
   `
-    case "EXAMPLE_FETCH":
-      return html`
-      <h1>Fetching no?</h1>
-        <textarea>（*＾3＾）/～  </textarea>
+  case "PLAYER_SELECT":
+    return html`
+      <div class="container circle">
+      <h2>Select a Peep</h2>
+        ${nextButton(state)}
+      </div>
     `
     default:
     return html`
@@ -39,21 +50,27 @@ function chatlog(log: Array<any>){
   </ul>`
 }
 function chatItem(item: Chat){
-  return html`<li><b>${item.username}</b><span>${item.message}</span></li>`
+  return html`<li><b>${item.username}:</b> <span>${item.message}</span></li>`
 }
 
 function chatInput(state: State){
   return html`<input 
     class="chat-input"
-    placeholder="Type here..."
+    placeholder="say something..."
     value=${state.currentChat}
     onkeyup=${ACTIONS.handleOnChatInput}
   />`
 }
+function nextButton(state: State){
+  return html`<button 
+    class="button next"
+    onclick=${ACTIONS.handleNextButton}
+  > ${'next'} </button>`
+}
 function usernameInput(state: State){
   return html`<input 
     class="username-input"
-    placeholder="Username here..."
+    placeholder="what is your disply name"
     value=${state.username}
     onkeyup=${ACTIONS.handleOnUsernameInput}
   />`
