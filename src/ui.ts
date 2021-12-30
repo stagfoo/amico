@@ -21,7 +21,7 @@ export function routing(state: State) {
         </header>
         <div>
           ${usernameInput(state)}
-          ${nextButton(state)}
+          ${nextButton()}
           </div>
         </section>
       `
@@ -34,7 +34,7 @@ export function routing(state: State) {
     return html`
       <div class="container circle">
       <h2>Select a Peep</h2>
-        ${nextButton(state)}
+        ${nextButton()}
       </div>
     `
     default:
@@ -61,7 +61,7 @@ function chatInput(state: State){
     onkeyup=${ACTIONS.handleOnChatInput}
   />`
 }
-function nextButton(state: State){
+function nextButton(){
   return html`<button 
     class="button next"
     onclick=${ACTIONS.handleNextButton}
