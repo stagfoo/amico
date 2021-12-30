@@ -7,7 +7,8 @@
     "build": "tsc && vite build --emptyOutDir",
     "copy:textures": "cp -R textures ../amico-be/public/",
     "copy:mesh": "cp -R mesh ../amico-be/public/",
-    "postbuild": "npm run copy:mesh && npm run copy:textures",
+    "copy:font": "cp -R fonts ../amico-be/public/",
+    "postbuild": "npm run copy:mesh && npm run copy:textures && npm run copy:fonts",
     "serve": "vite preview"
   },
   "devDependencies": {
