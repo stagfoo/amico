@@ -1,6 +1,6 @@
 export default {
   build: {
-    outDir: '../backend/dist/public'
+    outDir: '../amico-be/public'
   },
   server: {
     port: "9991",
